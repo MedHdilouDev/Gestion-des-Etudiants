@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>etdClass.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">GestionDesEtudiants</a> &gt; <a href="index.source.html" class="el_package">Entite</a> &gt; <span class="el_source">etdClass.java</span></div><h1>etdClass.java</h1><pre class="source lang-java linenums">/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package Entite;
+
+import java.io.Serializable;
+
+/**
+ *
+ * @author Mohamed Hdilou
+ */
+public class etdClass implements Serializable {
+
+    private int idClasse;
+    private String nomClasse;
+    private Integer idFiliere; // Utiliser Integer pour permettre les valeurs NULL
+
+    // Constructeurs
+<span class="fc" id="L20">    public etdClass() {</span>
+<span class="fc" id="L21">    }</span>
+
+<span class="fc" id="L23">    public etdClass(String nomClasse, Integer idFiliere) {</span>
+<span class="fc" id="L24">        this.nomClasse = nomClasse;</span>
+<span class="fc" id="L25">        this.idFiliere = idFiliere;</span>
+<span class="fc" id="L26">    }</span>
+
+<span class="fc" id="L28">    public etdClass(int idClasse, String nomClasse, Integer idFiliere) {</span>
+<span class="fc" id="L29">        this.idClasse = idClasse;</span>
+<span class="fc" id="L30">        this.nomClasse = nomClasse;</span>
+<span class="fc" id="L31">        this.idFiliere = idFiliere;</span>
+<span class="fc" id="L32">    }</span>
+
+    // Getters et Setters
+    public int getIdClasse() {
+<span class="fc" id="L36">        return idClasse;</span>
+    }
+
+    public void setIdClasse(int idClasse) {
+<span class="fc" id="L40">        this.idClasse = idClasse;</span>
+<span class="fc" id="L41">    }</span>
+
+    public String getNomClasse() {
+<span class="fc" id="L44">        return nomClasse;</span>
+    }
+
+    public void setNomClasse(String nomClasse) {
+<span class="fc" id="L48">        this.nomClasse = nomClasse;</span>
+<span class="fc" id="L49">    }</span>
+
+    public Integer getIdFiliere() {
+<span class="fc" id="L52">        return idFiliere;</span>
+    }
+
+    public void setIdFiliere(Integer idFiliere) {
+<span class="fc" id="L56">        this.idFiliere = idFiliere;</span>
+<span class="fc" id="L57">    }</span>
+
+    @Override
+    public String toString() {
+<span class="fc" id="L61">        return &quot;etdClass{&quot; +</span>
+                &quot;idClasse=&quot; + idClasse +
+                &quot;, nomClasse='&quot; + nomClasse + '\'' +
+                &quot;, idFiliere=&quot; + idFiliere +
+                '}';
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Client.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">GestionDesEtudiants</a> &gt; <a href="index.source.html" class="el_package">client</a> &gt; <span class="el_source">Client.java</span></div><h1>Client.java</h1><pre class="source lang-java linenums">package client;
+
+import Entite.Etudiant;
+import Entite.etdClass;
+import Server.AdminService;
+import java.rmi.Naming;
+import java.rmi.RemoteException;
+import java.sql.Date;
+import java.util.ArrayList;
+
+public class Client {
+
+    private AdminService adminService;
+
+<span class="fc" id="L15">    public Client() {</span>
+        try {
+            // Connexion au serveur RMI
+<span class="fc" id="L18">            adminService = (AdminService) Naming.lookup(&quot;rmi://localhost/AdminService&quot;);</span>
+<span class="fc" id="L19">        } catch (Exception e) {</span>
+<span class="fc" id="L20">            e.printStackTrace();</span>
+<span class="fc" id="L21">        }</span>
+<span class="fc" id="L22">    }</span>
+
+    public boolean login(String email, String password) throws RemoteException {
+<span class="fc" id="L25">        return adminService.login(email, password);</span>
+    }
+
+    public ArrayList&lt;etdClass&gt; chargercmbClass() throws RemoteException {
+<span class="fc" id="L29">        return adminService.chargercmbClass();</span>
+    }
+
+    public boolean ajouterEtudiant(String nom, String prenom, String email, Date dateNaissance, int idClasse) throws RemoteException {
+<span class="fc" id="L33">        return adminService.ajouterEtudiant(nom, prenom, email, dateNaissance, idClasse);</span>
+    }
+
+    public ArrayList&lt;Etudiant&gt; afficherEtudiants() throws RemoteException {
+<span class="nc" id="L37">        return adminService.afficherEtudiants();</span>
+    }
+
+    public boolean modifierEtudiant(int idEtudiant, String nom, String prenom, String email, Date dateNaissance, int idClasse) throws RemoteException {
+<span class="fc" id="L41">        return adminService.modifierEtudiant(idEtudiant, nom, prenom, email, dateNaissance, idClasse);</span>
+    }
+
+    public boolean supprimerEtudiant(int idEtudiant) throws RemoteException {
+<span class="fc" id="L45">        return adminService.supprimerEtudiant(idEtudiant);</span>
+    }
+
+    public ArrayList&lt;Etudiant&gt; afficherEtudiantsParClasse(int idClasse) throws RemoteException {
+<span class="nc" id="L49">        return adminService.afficherEtudiantsParClasse(idClasse);</span>
+    }
+    
+    public ArrayList&lt;Etudiant&gt; searchETD(String nom) throws RemoteException {
+<span class="fc" id="L53">        return adminService.searchETD(nom);</span>
+    }
+
+ }
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

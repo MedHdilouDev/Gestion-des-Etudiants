@@ -1,0 +1,788 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GestionEtdIHM.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">GestionDesEtudiants</a> &gt; <a href="index.source.html" class="el_package">IHM</a> &gt; <span class="el_source">GestionEtdIHM.java</span></div><h1>GestionEtdIHM.java</h1><pre class="source lang-java linenums">/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ */
+package IHM;
+
+import Entite.Etudiant;
+import Entite.etdClass;
+import client.Client;
+import java.awt.Image;
+import java.awt.event.ComponentEvent;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+
+/**
+ *
+ * @author Mohamed Hdilou
+ */
+public class GestionEtdIHM extends javax.swing.JFrame {
+     private ArrayList&lt;etdClass&gt; classes; // Variable pour stocker les classes
+    private Client client; // Variable pour stocker l'instance Client
+    
+    
+    
+
+    /**
+     * Creates new form GestionEtudiantsIHM
+     */
+<span class="nc" id="L47">    public GestionEtdIHM() throws RemoteException {</span>
+<span class="nc" id="L48">        initComponents();</span>
+<span class="nc" id="L49">        client = new Client();</span>
+<span class="nc" id="L50">        chargerClasses();</span>
+<span class="nc" id="L51">        chargerTableEtudiants();</span>
+<span class="nc" id="L52">        initTableSelectionListener(); // Initialiser le ListSelectionListener</span>
+<span class="nc" id="L53">    }</span>
+    
+    
+    private void chargerTableEtudiants() {
+        try {
+<span class="nc" id="L58">            ArrayList&lt;Etudiant&gt; etudiants = client.afficherEtudiants();</span>
+<span class="nc" id="L59">            DefaultTableModel model = (DefaultTableModel) table.getModel();</span>
+<span class="nc" id="L60">            model.setRowCount(0); // Effacer les anciennes données</span>
+
+<span class="nc bnc" id="L62" title="All 2 branches missed.">            for (Etudiant etudiant : etudiants) {</span>
+<span class="nc" id="L63">                Object[] row = {</span>
+<span class="nc" id="L64">                    etudiant.getId(),</span>
+<span class="nc" id="L65">                    etudiant.getNom(),</span>
+<span class="nc" id="L66">                    etudiant.getPrenom(),</span>
+<span class="nc" id="L67">                    etudiant.getEmail(),</span>
+<span class="nc" id="L68">                    etudiant.getNomFiliere(), // Assurez-vous d'avoir ces getters dans votre classe Etudiant</span>
+<span class="nc" id="L69">                    etudiant.getNomClasse()  // Assurez-vous d'avoir ces getters dans votre classe Etudiant</span>
+                };
+<span class="nc" id="L71">                model.addRow(row);</span>
+<span class="nc" id="L72">            }</span>
+<span class="nc" id="L73">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L74">            Logger.getLogger(GestionEtdIHM.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L75">            javax.swing.JOptionPane.showMessageDialog(this, &quot;Erreur de récupération des étudiants.&quot;, &quot;Erreur&quot;, javax.swing.JOptionPane.ERROR_MESSAGE);</span>
+<span class="nc" id="L76">        }</span>
+<span class="nc" id="L77">    }</span>
+    
+  
+    
+    
+    
+    
+    
+    
+    private void chargerClasses() throws RemoteException {
+<span class="nc" id="L87">        classes = client.chargercmbClass();</span>
+<span class="nc" id="L88">        DefaultComboBoxModel&lt;String&gt; model = new DefaultComboBoxModel&lt;&gt;();</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        for (etdClass classe : classes) {</span>
+<span class="nc" id="L90">            model.addElement(classe.getNomClasse()); // Afficher le nom de la classe</span>
+<span class="nc" id="L91">        }</span>
+<span class="nc" id="L92">        cmbClass.setModel(model);</span>
+<span class="nc" id="L93">    }</span>
+    
+    
+     private void initTableSelectionListener() {
+<span class="nc" id="L97">        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {</span>
+            @Override
+            public void valueChanged(ListSelectionEvent event) {
+<span class="nc bnc" id="L100" title="All 2 branches missed.">                if (!event.getValueIsAdjusting()) {</span>
+<span class="nc" id="L101">                    int selectedRow = table.getSelectedRow();</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">                    if (selectedRow != -1) {</span>
+<span class="nc" id="L103">                        afficherEtudiantSelectionne(selectedRow);</span>
+                    }
+                }
+<span class="nc" id="L106">            }</span>
+        });
+<span class="nc" id="L108">    }</span>
+     
+     
+      private void afficherEtudiantSelectionne(int selectedRow) {
+<span class="nc" id="L112">        DefaultTableModel model = (DefaultTableModel) table.getModel();</span>
+<span class="nc" id="L113">        int idEtudiant = (int) model.getValueAt(selectedRow, 0);</span>
+<span class="nc" id="L114">        String nom = (String) model.getValueAt(selectedRow, 1);</span>
+<span class="nc" id="L115">        String prenom = (String) model.getValueAt(selectedRow, 2);</span>
+<span class="nc" id="L116">        String email = (String) model.getValueAt(selectedRow, 3);</span>
+<span class="nc" id="L117">        String nomFiliere = (String) model.getValueAt(selectedRow, 4);</span>
+<span class="nc" id="L118">        String nomClasse = (String) model.getValueAt(selectedRow, 5);</span>
+
+<span class="nc" id="L120">        txtNom.setText(nom);</span>
+<span class="nc" id="L121">        txtPrenom.setText(prenom);</span>
+<span class="nc" id="L122">        txtEmail.setText(email);</span>
+
+        // Récupérer la date de naissance
+        try {
+<span class="nc" id="L126">            ArrayList&lt;Etudiant&gt; etudiants = client.afficherEtudiants();</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">            for (Etudiant etudiant : etudiants) {</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">                if (etudiant.getId() == idEtudiant) {</span>
+<span class="nc" id="L129">                    txtDateN.setDate(etudiant.getDateNaissance());</span>
+<span class="nc" id="L130">                    break;</span>
+                }
+<span class="nc" id="L132">            }</span>
+<span class="nc" id="L133">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L134">            Logger.getLogger(GestionEtdIHM.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L135">        }</span>
+
+        // Sélectionner la classe dans la combobox
+<span class="nc bnc" id="L138" title="All 2 branches missed.">        for (int i = 0; i &lt; classes.size(); i++) {</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">            if (classes.get(i).getNomClasse().equals(nomClasse)) {</span>
+<span class="nc" id="L140">                cmbClass.setSelectedIndex(i);</span>
+<span class="nc" id="L141">                break;</span>
+            }
+        }
+<span class="nc" id="L144">    }</span>
+
+
+
+    @SuppressWarnings(&quot;unchecked&quot;)
+    // &lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;Generated Code&quot;&gt;//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+<span class="nc" id="L152">        jPanel1 = new javax.swing.JPanel();</span>
+<span class="nc" id="L153">        jPanel2 = new javax.swing.JPanel();</span>
+<span class="nc" id="L154">        jLabel1 = new javax.swing.JLabel();</span>
+<span class="nc" id="L155">        jButton1 = new javax.swing.JButton();</span>
+<span class="nc" id="L156">        txtNom = new javax.swing.JTextField();</span>
+<span class="nc" id="L157">        txtPrenom = new javax.swing.JTextField();</span>
+<span class="nc" id="L158">        txtEmail = new javax.swing.JTextField();</span>
+<span class="nc" id="L159">        jScrollPane1 = new javax.swing.JScrollPane();</span>
+<span class="nc" id="L160">        table = new javax.swing.JTable();</span>
+<span class="nc" id="L161">        btnAdd = new javax.swing.JButton();</span>
+<span class="nc" id="L162">        btnModifer = new javax.swing.JButton();</span>
+<span class="nc" id="L163">        btndellEtudiant = new javax.swing.JButton();</span>
+<span class="nc" id="L164">        jLabel2 = new javax.swing.JLabel();</span>
+<span class="nc" id="L165">        jLabel3 = new javax.swing.JLabel();</span>
+<span class="nc" id="L166">        jLabel4 = new javax.swing.JLabel();</span>
+<span class="nc" id="L167">        cmbClass = new javax.swing.JComboBox&lt;&gt;();</span>
+<span class="nc" id="L168">        txtDateN = new com.toedter.calendar.JDateChooser();</span>
+<span class="nc" id="L169">        jLabel5 = new javax.swing.JLabel();</span>
+<span class="nc" id="L170">        btnAfficherParClasse = new javax.swing.JButton();</span>
+<span class="nc" id="L171">        btnImprimer = new javax.swing.JButton();</span>
+<span class="nc" id="L172">        txtSearch = new javax.swing.JTextField();</span>
+<span class="nc" id="L173">        jLabel6 = new javax.swing.JLabel();</span>
+
+<span class="nc" id="L175">        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);</span>
+<span class="nc" id="L176">        addWindowListener(new java.awt.event.WindowAdapter() {</span>
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+<span class="nc" id="L178">                formWindowOpened(evt);</span>
+<span class="nc" id="L179">            }</span>
+        });
+
+<span class="nc" id="L182">        jPanel1.setBackground(new java.awt.Color(255, 255, 255));</span>
+
+<span class="nc" id="L184">        jPanel2.setBackground(new java.awt.Color(102, 204, 255));</span>
+
+<span class="nc" id="L186">        jLabel1.setFont(new java.awt.Font(&quot;Segoe UI&quot;, 1, 36)); // NOI18N</span>
+<span class="nc" id="L187">        jLabel1.setForeground(new java.awt.Color(255, 255, 255));</span>
+<span class="nc" id="L188">        jLabel1.setText(&quot;Gestion Des Etudinats&quot;);</span>
+
+<span class="nc" id="L190">        jButton1.setBackground(new java.awt.Color(51, 204, 255));</span>
+<span class="nc" id="L191">        jButton1.setFont(new java.awt.Font(&quot;Segoe UI&quot;, 3, 36)); // NOI18N</span>
+<span class="nc" id="L192">        jButton1.setForeground(new java.awt.Color(255, 255, 255));</span>
+<span class="nc" id="L193">        jButton1.setText(&quot;&lt;&quot;);</span>
+<span class="nc" id="L194">        jButton1.addActionListener(new java.awt.event.ActionListener() {</span>
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+<span class="nc" id="L196">                jButton1ActionPerformed(evt);</span>
+<span class="nc" id="L197">            }</span>
+        });
+
+<span class="nc" id="L200">        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);</span>
+<span class="nc" id="L201">        jPanel2.setLayout(jPanel2Layout);</span>
+<span class="nc" id="L202">        jPanel2Layout.setHorizontalGroup(</span>
+<span class="nc" id="L203">            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)</span>
+<span class="nc" id="L204">            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()</span>
+<span class="nc" id="L205">                .addContainerGap()</span>
+<span class="nc" id="L206">                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)</span>
+<span class="nc" id="L207">                .addGap(328, 328, 328)</span>
+<span class="nc" id="L208">                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 419, javax.swing.GroupLayout.PREFERRED_SIZE)</span>
+<span class="nc" id="L209">                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))</span>
+        );
+<span class="nc" id="L211">        jPanel2Layout.setVerticalGroup(</span>
+<span class="nc" id="L212">            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)</span>
+<span class="nc" id="L213">            .addGroup(jPanel2Layout.createSequentialGroup()</span>
+<span class="nc" id="L214">                .addGap(14, 14, 14)</span>
+<span class="nc" id="L215">                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)</span>
+<span class="nc" id="L216">                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)</span>
+<span class="nc" id="L217">                    .addComponent(jLabel1))</span>
+<span class="nc" id="L218">                .addContainerGap(18, Short.MAX_VALUE))</span>
+        );
+
+<span class="nc" id="L221">        table.setModel(new javax.swing.table.DefaultTableModel(</span>
+            new Object [][] {
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
+            },
+            new String [] {
+                &quot;CodeEtudiant&quot;, &quot;Nom&quot;, &quot;Prenom&quot;, &quot;Email&quot;, &quot;Filier&quot;, &quot;Classe&quot;
+            }
+<span class="nc" id="L231">        ) {</span>
+<span class="nc" id="L232">            boolean[] canEdit = new boolean [] {</span>
+                false, false, false, false, true, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+<span class="nc" id="L237">                return canEdit [columnIndex];</span>
+            }
+        });
+<span class="nc" id="L240">        jScrollPane1.setViewportView(table);</span>
+
+<span class="nc" id="L242">        btnAdd.setBackground(new java.awt.Color(51, 204, 0));</span>
+<span class="nc" id="L243">        btnAdd.setFont(new java.awt.Font(&quot;Segoe UI&quot;, 3, 14)); // NOI18N</span>
+<span class="nc" id="L244">        btnAdd.setForeground(new java.awt.Color(255, 255, 255));</span>
+<span class="nc" id="L245">        btnAdd.setText(&quot;Ajouter &quot;);</span>
+<span class="nc" id="L246">        btnAdd.addActionListener(new java.awt.event.ActionListener() {</span>
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+<span class="nc" id="L248">                btnAddActionPerformed(evt);</span>
+<span class="nc" id="L249">            }</span>
+        });
+
+<span class="nc" id="L252">        btnModifer.setBackground(new java.awt.Color(255, 102, 0));</span>
+<span class="nc" id="L253">        btnModifer.setFont(new java.awt.Font(&quot;Segoe UI&quot;, 3, 14)); // NOI18N</span>
+<span class="nc" id="L254">        btnModifer.setForeground(new java.awt.Color(255, 255, 255));</span>
+<span class="nc" id="L255">        btnModifer.setText(&quot;Modifer&quot;);</span>
+<span class="nc" id="L256">        btnModifer.addActionListener(new java.awt.event.ActionListener() {</span>
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+<span class="nc" id="L258">                btnModiferActionPerformed(evt);</span>
+<span class="nc" id="L259">            }</span>
+        });
+
+<span class="nc" id="L262">        btndellEtudiant.setBackground(new java.awt.Color(255, 51, 51));</span>
+<span class="nc" id="L263">        btndellEtudiant.setFont(new java.awt.Font(&quot;Segoe UI&quot;, 3, 14)); // NOI18N</span>
+<span class="nc" id="L264">        btndellEtudiant.setForeground(new java.awt.Color(255, 255, 255));</span>
+<span class="nc" id="L265">        btndellEtudiant.setText(&quot;Supremmer&quot;);</span>
+<span class="nc" id="L266">        btndellEtudiant.addActionListener(new java.awt.event.ActionListener() {</span>
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+<span class="nc" id="L268">                btndellEtudiantActionPerformed(evt);</span>
+<span class="nc" id="L269">            }</span>
+        });
+
+<span class="nc" id="L272">        jLabel2.setText(&quot;Nom &quot;);</span>
+
+<span class="nc" id="L274">        jLabel3.setText(&quot;Prenom&quot;);</span>
+
+<span class="nc" id="L276">        jLabel4.setText(&quot;Email&quot;);</span>
+
+<span class="nc" id="L278">        cmbClass.setModel(new javax.swing.DefaultComboBoxModel&lt;&gt;(new String[] { &quot;Item 1&quot;, &quot;Item 2&quot;, &quot;Item 3&quot;, &quot;Item 4&quot; }));</span>
+<span class="nc" id="L279">        cmbClass.addActionListener(new java.awt.event.ActionListener() {</span>
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+<span class="nc" id="L281">                cmbClassActionPerformed(evt);</span>
+<span class="nc" id="L282">            }</span>
+        });
+
+<span class="nc" id="L285">        jLabel5.setText(&quot;date d'ennesanse&quot;);</span>
+
+<span class="nc" id="L287">        btnAfficherParClasse.setBackground(new java.awt.Color(0, 153, 255));</span>
+<span class="nc" id="L288">        btnAfficherParClasse.setFont(new java.awt.Font(&quot;Segoe UI&quot;, 3, 12)); // NOI18N</span>
+<span class="nc" id="L289">        btnAfficherParClasse.setForeground(new java.awt.Color(255, 255, 255));</span>
+<span class="nc" id="L290">        btnAfficherParClasse.setText(&quot;Étudiants de la classe :&quot;);</span>
+<span class="nc" id="L291">        btnAfficherParClasse.addActionListener(new java.awt.event.ActionListener() {</span>
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+<span class="nc" id="L293">                btnAfficherParClasseActionPerformed(evt);</span>
+<span class="nc" id="L294">            }</span>
+        });
+
+<span class="nc" id="L297">        btnImprimer.setBackground(new java.awt.Color(102, 153, 255));</span>
+<span class="nc" id="L298">        btnImprimer.setFont(new java.awt.Font(&quot;Segoe UI&quot;, 3, 14)); // NOI18N</span>
+<span class="nc" id="L299">        btnImprimer.setForeground(new java.awt.Color(255, 255, 255));</span>
+<span class="nc" id="L300">        btnImprimer.setText(&quot;Imprimer&quot;);</span>
+<span class="nc" id="L301">        btnImprimer.setActionCommand(&quot;impirimer&quot;);</span>
+<span class="nc" id="L302">        btnImprimer.addActionListener(new java.awt.event.ActionListener() {</span>
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+<span class="nc" id="L304">                btnImprimerActionPerformed(evt);</span>
+<span class="nc" id="L305">            }</span>
+        });
+
+<span class="nc" id="L308">        txtSearch.addActionListener(new java.awt.event.ActionListener() {</span>
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+<span class="nc" id="L310">                txtSearchActionPerformed(evt);</span>
+<span class="nc" id="L311">            }</span>
+        });
+<span class="nc" id="L313">        txtSearch.addKeyListener(new java.awt.event.KeyAdapter() {</span>
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+<span class="nc" id="L315">                txtSearchKeyReleased(evt);</span>
+<span class="nc" id="L316">            }</span>
+        });
+
+<span class="nc" id="L319">        jLabel6.setFont(new java.awt.Font(&quot;Segoe UI&quot;, 2, 12)); // NOI18N</span>
+<span class="nc" id="L320">        jLabel6.setForeground(new java.awt.Color(153, 153, 153));</span>
+<span class="nc" id="L321">        jLabel6.setText(&quot;rechercher un Etudiant par Nom :&quot;);</span>
+
+<span class="nc" id="L323">        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);</span>
+<span class="nc" id="L324">        jPanel1.setLayout(jPanel1Layout);</span>
+<span class="nc" id="L325">        jPanel1Layout.setHorizontalGroup(</span>
+<span class="nc" id="L326">            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)</span>
+<span class="nc" id="L327">            .addGroup(jPanel1Layout.createSequentialGroup()</span>
+<span class="nc" id="L328">                .addGap(20, 20, 20)</span>
+<span class="nc" id="L329">                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)</span>
+<span class="nc" id="L330">                    .addGroup(jPanel1Layout.createSequentialGroup()</span>
+<span class="nc" id="L331">                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)</span>
+<span class="nc" id="L332">                        .addGap(0, 0, Short.MAX_VALUE))</span>
+<span class="nc" id="L333">                    .addGroup(jPanel1Layout.createSequentialGroup()</span>
+<span class="nc" id="L334">                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)</span>
+<span class="nc" id="L335">                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)</span>
+<span class="nc" id="L336">                                .addComponent(txtNom)</span>
+<span class="nc" id="L337">                                .addComponent(cmbClass, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)</span>
+<span class="nc" id="L338">                                .addComponent(btndellEtudiant, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)</span>
+<span class="nc" id="L339">                                .addComponent(btnModifer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))</span>
+<span class="nc" id="L340">                            .addComponent(btnAfficherParClasse)</span>
+<span class="nc" id="L341">                            .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE))</span>
+<span class="nc" id="L342">                        .addGap(53, 53, 53)</span>
+<span class="nc" id="L343">                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)</span>
+<span class="nc" id="L344">                            .addGroup(jPanel1Layout.createSequentialGroup()</span>
+<span class="nc" id="L345">                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)</span>
+<span class="nc" id="L346">                                    .addGroup(jPanel1Layout.createSequentialGroup()</span>
+<span class="nc" id="L347">                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)</span>
+<span class="nc" id="L348">                                            .addComponent(txtPrenom, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)</span>
+<span class="nc" id="L349">                                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))</span>
+<span class="nc" id="L350">                                        .addGap(73, 73, 73)</span>
+<span class="nc" id="L351">                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)</span>
+<span class="nc" id="L352">                                            .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)</span>
+<span class="nc" id="L353">                                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))</span>
+<span class="nc" id="L354">                                        .addGap(73, 73, 73))</span>
+<span class="nc" id="L355">                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()</span>
+<span class="nc" id="L356">                                        .addComponent(jLabel6)</span>
+<span class="nc" id="L357">                                        .addGap(18, 18, 18)))</span>
+<span class="nc" id="L358">                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)</span>
+<span class="nc" id="L359">                                    .addComponent(txtDateN, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)</span>
+<span class="nc" id="L360">                                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)</span>
+<span class="nc" id="L361">                                    .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 399, javax.swing.GroupLayout.PREFERRED_SIZE)))</span>
+<span class="nc" id="L362">                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 907, javax.swing.GroupLayout.PREFERRED_SIZE)</span>
+<span class="nc" id="L363">                            .addGroup(jPanel1Layout.createSequentialGroup()</span>
+<span class="nc" id="L364">                                .addGap(6, 6, 6)</span>
+<span class="nc" id="L365">                                .addComponent(btnImprimer, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE)))</span>
+<span class="nc" id="L366">                        .addContainerGap(72, Short.MAX_VALUE))))</span>
+<span class="nc" id="L367">            .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)</span>
+        );
+<span class="nc" id="L369">        jPanel1Layout.setVerticalGroup(</span>
+<span class="nc" id="L370">            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)</span>
+<span class="nc" id="L371">            .addGroup(jPanel1Layout.createSequentialGroup()</span>
+<span class="nc" id="L372">                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)</span>
+<span class="nc" id="L373">                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)</span>
+<span class="nc" id="L374">                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)</span>
+<span class="nc" id="L375">                    .addComponent(jLabel2)</span>
+<span class="nc" id="L376">                    .addComponent(jLabel3)</span>
+<span class="nc" id="L377">                    .addComponent(jLabel4)</span>
+<span class="nc" id="L378">                    .addComponent(jLabel5))</span>
+<span class="nc" id="L379">                .addGap(3, 3, 3)</span>
+<span class="nc" id="L380">                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)</span>
+<span class="nc" id="L381">                    .addGroup(jPanel1Layout.createSequentialGroup()</span>
+<span class="nc" id="L382">                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)</span>
+<span class="nc" id="L383">                            .addComponent(txtNom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)</span>
+<span class="nc" id="L384">                            .addComponent(txtPrenom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)</span>
+<span class="nc" id="L385">                            .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))</span>
+<span class="nc" id="L386">                        .addGap(24, 24, 24)</span>
+<span class="nc" id="L387">                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)</span>
+<span class="nc" id="L388">                            .addComponent(btnAfficherParClasse)</span>
+<span class="nc" id="L389">                            .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)</span>
+<span class="nc" id="L390">                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))</span>
+<span class="nc" id="L391">                    .addComponent(txtDateN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))</span>
+<span class="nc" id="L392">                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)</span>
+<span class="nc" id="L393">                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)</span>
+<span class="nc" id="L394">                    .addGroup(jPanel1Layout.createSequentialGroup()</span>
+<span class="nc" id="L395">                        .addComponent(cmbClass, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)</span>
+<span class="nc" id="L396">                        .addGap(50, 50, 50)</span>
+<span class="nc" id="L397">                        .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)</span>
+<span class="nc" id="L398">                        .addGap(34, 34, 34)</span>
+<span class="nc" id="L399">                        .addComponent(btnModifer, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)</span>
+<span class="nc" id="L400">                        .addGap(42, 42, 42)</span>
+<span class="nc" id="L401">                        .addComponent(btndellEtudiant, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))</span>
+<span class="nc" id="L402">                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 449, javax.swing.GroupLayout.PREFERRED_SIZE))</span>
+<span class="nc" id="L403">                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)</span>
+<span class="nc" id="L404">                .addComponent(btnImprimer)</span>
+<span class="nc" id="L405">                .addContainerGap(65, Short.MAX_VALUE))</span>
+        );
+
+<span class="nc" id="L408">        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());</span>
+<span class="nc" id="L409">        getContentPane().setLayout(layout);</span>
+<span class="nc" id="L410">        layout.setHorizontalGroup(</span>
+<span class="nc" id="L411">            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)</span>
+<span class="nc" id="L412">            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)</span>
+        );
+<span class="nc" id="L414">        layout.setVerticalGroup(</span>
+<span class="nc" id="L415">            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)</span>
+<span class="nc" id="L416">            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)</span>
+        );
+
+<span class="nc" id="L419">        pack();</span>
+<span class="nc" id="L420">    }// &lt;/editor-fold&gt;//GEN-END:initComponents</span>
+
+    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
+try {
+        // Récupérer les valeurs saisies par l'utilisateur
+<span class="nc" id="L425">        String nom = txtNom.getText().trim();</span>
+<span class="nc" id="L426">        String prenom = txtPrenom.getText().trim();</span>
+<span class="nc" id="L427">        String email = txtEmail.getText().trim();</span>
+<span class="nc" id="L428">        java.util.Date dateUtil = txtDateN.getDate();</span>
+        
+        // Vérifier si tous les champs sont remplis
+<span class="nc bnc" id="L431" title="All 10 branches missed.">        if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || dateUtil == null || cmbClass.getSelectedIndex() == -1) {</span>
+<span class="nc" id="L432">            javax.swing.JOptionPane.showMessageDialog(this, &quot;Veuillez remplir tous les champs.&quot;, &quot;Erreur&quot;, javax.swing.JOptionPane.ERROR_MESSAGE);</span>
+<span class="nc" id="L433">            return;</span>
+        }
+        
+        // Convertir la date de java.util.Date à java.sql.Date
+<span class="nc" id="L437">        java.sql.Date dateNaissance = new java.sql.Date(dateUtil.getTime());</span>
+        
+        // Récupérer l'ID de la classe sélectionnée
+<span class="nc" id="L440">        int index = cmbClass.getSelectedIndex();</span>
+<span class="nc" id="L441">        int idClasse = classes.get(index).getIdClasse();</span>
+        
+        // Appeler la méthode d'ajout
+<span class="nc" id="L444">        boolean success = client.ajouterEtudiant(nom, prenom, email, dateNaissance, idClasse);</span>
+        
+        // Vérifier si l'ajout a réussi
+<span class="nc bnc" id="L447" title="All 2 branches missed.">        if (success) {</span>
+<span class="nc" id="L448">            javax.swing.JOptionPane.showMessageDialog(this, &quot;Étudiant ajouté avec succès !&quot;, &quot;Succès&quot;, javax.swing.JOptionPane.INFORMATION_MESSAGE);</span>
+<span class="nc" id="L449">            chargerTableEtudiants();</span>
+            
+        } else {
+<span class="nc" id="L452">            javax.swing.JOptionPane.showMessageDialog(this, &quot;Échec de l'ajout de l'étudiant.&quot;, &quot;Erreur&quot;, javax.swing.JOptionPane.ERROR_MESSAGE);</span>
+        }
+<span class="nc" id="L454">    } catch (RemoteException ex) {</span>
+<span class="nc" id="L455">        Logger.getLogger(GestionEtdIHM.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L456">        javax.swing.JOptionPane.showMessageDialog(this, &quot;Erreur de connexion au serveur.&quot;, &quot;Erreur&quot;, javax.swing.JOptionPane.ERROR_MESSAGE);</span>
+<span class="nc" id="L457">    }</span>
+<span class="nc" id="L458">    }//GEN-LAST:event_btnAddActionPerformed</span>
+
+    private void cmbClassActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbClassActionPerformed
+        // TODO add your handling code here:
+<span class="nc" id="L462">    }//GEN-LAST:event_cmbClassActionPerformed</span>
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+<span class="nc" id="L465">        client = new Client(); // Initialiser le client</span>
+         try {
+<span class="nc" id="L467">             chargerClasses();</span>
+<span class="nc" id="L468">             chargerTableEtudiants();</span>
+<span class="nc" id="L469">         } catch (RemoteException ex) {</span>
+<span class="nc" id="L470">             Logger.getLogger(GestionEtdIHM.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L471">         }</span>
+<span class="nc" id="L472">    }//GEN-LAST:event_formWindowOpened</span>
+
+    private void btnModiferActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModiferActionPerformed
+<span class="nc" id="L475">  int selectedRow = table.getSelectedRow();</span>
+<span class="nc bnc" id="L476" title="All 2 branches missed.">    if (selectedRow == -1) {</span>
+<span class="nc" id="L477">        JOptionPane.showMessageDialog(this, &quot;Veuillez sélectionner un étudiant à modifier.&quot;, &quot;Erreur&quot;, JOptionPane.ERROR_MESSAGE);</span>
+<span class="nc" id="L478">        return;</span>
+    }
+
+    try {
+<span class="nc" id="L482">        int idEtudiant = (int) table.getValueAt(selectedRow, 0);</span>
+<span class="nc" id="L483">        String nom = txtNom.getText().trim();</span>
+<span class="nc" id="L484">        String prenom = txtPrenom.getText().trim();</span>
+<span class="nc" id="L485">        String email = txtEmail.getText().trim();</span>
+
+        // Conversion correcte de java.util.Date à java.sql.Date
+<span class="nc" id="L488">        java.util.Date utilDate = txtDateN.getDate();</span>
+<span class="nc bnc" id="L489" title="All 2 branches missed.">        if (utilDate == null) {</span>
+<span class="nc" id="L490">            JOptionPane.showMessageDialog(this, &quot;Veuillez sélectionner une date de naissance.&quot;, &quot;Erreur&quot;, JOptionPane.ERROR_MESSAGE);</span>
+<span class="nc" id="L491">            return;</span>
+        }
+<span class="nc" id="L493">        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());</span>
+
+<span class="nc" id="L495">        int idClasse = classes.get(cmbClass.getSelectedIndex()).getIdClasse();</span>
+
+        // Message de confirmation
+<span class="nc" id="L498">        int confirmation = JOptionPane.showConfirmDialog(this, &quot;Confirmer la modification de l'étudiant ?&quot;, &quot;Confirmation&quot;, JOptionPane.YES_NO_OPTION);</span>
+<span class="nc bnc" id="L499" title="All 2 branches missed.">        if (confirmation == JOptionPane.YES_OPTION) {</span>
+<span class="nc" id="L500">            boolean success = client.modifierEtudiant(idEtudiant, nom, prenom, email, sqlDate, idClasse);</span>
+
+<span class="nc bnc" id="L502" title="All 2 branches missed.">            if (success) {</span>
+<span class="nc" id="L503">                JOptionPane.showMessageDialog(this, &quot;Étudiant modifié avec succès !&quot;, &quot;Succès&quot;, JOptionPane.INFORMATION_MESSAGE);</span>
+<span class="nc" id="L504">                chargerTableEtudiants();</span>
+            } else {
+<span class="nc" id="L506">                JOptionPane.showMessageDialog(this, &quot;Échec de la modification de l'étudiant.&quot;, &quot;Erreur&quot;, JOptionPane.ERROR_MESSAGE);</span>
+            }
+        }
+<span class="nc" id="L509">    } catch (RemoteException ex) {</span>
+<span class="nc" id="L510">        Logger.getLogger(GestionEtdIHM.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L511">        JOptionPane.showMessageDialog(this, &quot;Erreur de connexion au serveur.&quot;, &quot;Erreur&quot;, JOptionPane.ERROR_MESSAGE);</span>
+<span class="nc" id="L512">    }</span>
+
+    
+<span class="nc" id="L515">    }//GEN-LAST:event_btnModiferActionPerformed</span>
+
+    private void btndellEtudiantActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndellEtudiantActionPerformed
+<span class="nc" id="L518"> int selectedRow = table.getSelectedRow();</span>
+<span class="nc bnc" id="L519" title="All 2 branches missed.">    if (selectedRow == -1) {</span>
+<span class="nc" id="L520">        JOptionPane.showMessageDialog(this, &quot;Veuillez sélectionner un étudiant à supprimer.&quot;, &quot;Erreur&quot;, JOptionPane.ERROR_MESSAGE);</span>
+<span class="nc" id="L521">        return;</span>
+    }
+
+    try {
+<span class="nc" id="L525">        int idEtudiant = (int) table.getValueAt(selectedRow, 0);</span>
+
+        // Message de confirmation avant la suppression
+<span class="nc" id="L528">        int confirmation = JOptionPane.showConfirmDialog(this, &quot;Confirmer la suppression de l'étudiant ?&quot;, &quot;Confirmation&quot;, JOptionPane.YES_NO_OPTION);</span>
+<span class="nc bnc" id="L529" title="All 2 branches missed.">        if (confirmation == JOptionPane.YES_OPTION) {</span>
+<span class="nc" id="L530">            boolean success = client.supprimerEtudiant(idEtudiant);</span>
+
+<span class="nc bnc" id="L532" title="All 2 branches missed.">            if (success) {</span>
+<span class="nc" id="L533">                JOptionPane.showMessageDialog(this, &quot;Étudiant supprimé avec succès !&quot;, &quot;Succès&quot;, JOptionPane.INFORMATION_MESSAGE);</span>
+<span class="nc" id="L534">                chargerTableEtudiants(); // Mettre à jour le tableau après la suppression</span>
+            } else {
+<span class="nc" id="L536">                JOptionPane.showMessageDialog(this, &quot;Échec de la suppression de l'étudiant.&quot;, &quot;Erreur&quot;, JOptionPane.ERROR_MESSAGE);</span>
+            }
+        }
+<span class="nc" id="L539">    } catch (RemoteException ex) {</span>
+<span class="nc" id="L540">        Logger.getLogger(GestionEtdIHM.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L541">        JOptionPane.showMessageDialog(this, &quot;Erreur de connexion au serveur.&quot;, &quot;Erreur&quot;, JOptionPane.ERROR_MESSAGE);</span>
+<span class="nc" id="L542">    }    }//GEN-LAST:event_btndellEtudiantActionPerformed</span>
+
+    private void btnAfficherParClasseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAfficherParClasseActionPerformed
+ try {
+        // Récupérer la classe sélectionnée dans la combobox
+<span class="nc" id="L547">        int idClasse = classes.get(cmbClass.getSelectedIndex()).getIdClasse();</span>
+
+        // Récupérer les étudiants de la classe sélectionnée
+<span class="nc" id="L550">        ArrayList&lt;Etudiant&gt; etudiants = client.afficherEtudiantsParClasse(idClasse);</span>
+
+        // Effacer le tableau actuel
+<span class="nc" id="L553">        DefaultTableModel model = (DefaultTableModel) table.getModel();</span>
+<span class="nc" id="L554">        model.setRowCount(0);</span>
+
+        // Ajouter les étudiants au tableau
+<span class="nc bnc" id="L557" title="All 2 branches missed.">        for (Etudiant etudiant : etudiants) {</span>
+<span class="nc" id="L558">            Object[] row = {</span>
+<span class="nc" id="L559">                etudiant.getId(),</span>
+<span class="nc" id="L560">                etudiant.getNom(),</span>
+<span class="nc" id="L561">                etudiant.getPrenom(),</span>
+<span class="nc" id="L562">                etudiant.getEmail(),</span>
+<span class="nc" id="L563">                etudiant.getNomFiliere(),</span>
+<span class="nc" id="L564">                etudiant.getNomClasse()</span>
+            };
+<span class="nc" id="L566">            model.addRow(row);</span>
+<span class="nc" id="L567">        }</span>
+<span class="nc" id="L568">    } catch (RemoteException ex) {</span>
+<span class="nc" id="L569">        Logger.getLogger(GestionEtdIHM.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L570">        JOptionPane.showMessageDialog(this, &quot;Erreur de connexion au serveur.&quot;, &quot;Erreur&quot;, JOptionPane.ERROR_MESSAGE);</span>
+<span class="nc" id="L571">    }    }//GEN-LAST:event_btnAfficherParClasseActionPerformed</span>
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        try {
+<span class="nc" id="L575">            this.dispose();</span>
+<span class="nc" id="L576">            new AdminAccueilIHM().setVisible(true);</span>
+<span class="nc" id="L577">        } catch (Exception e) {</span>
+<span class="nc" id="L578">            e.printStackTrace();</span>
+<span class="nc" id="L579">        }</span>
+<span class="nc" id="L580">    }//GEN-LAST:event_jButton1ActionPerformed</span>
+
+    private void btnImprimerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImprimerActionPerformed
+<span class="nc" id="L583">int selectedRow = table.getSelectedRow();</span>
+<span class="nc bnc" id="L584" title="All 2 branches missed.">    if (selectedRow == -1) {</span>
+<span class="nc" id="L585">        JOptionPane.showMessageDialog(this, </span>
+            &quot;Veuillez sélectionner un étudiant à imprimer&quot;, 
+            &quot;Erreur&quot;, JOptionPane.ERROR_MESSAGE);
+<span class="nc" id="L588">        return;</span>
+    }
+    
+    try {
+<span class="nc" id="L592">        int idEtudiant = (int) table.getValueAt(selectedRow, 0);</span>
+<span class="nc" id="L593">        ArrayList&lt;Etudiant&gt; etudiants = client.afficherEtudiants();</span>
+        
+<span class="nc bnc" id="L595" title="All 2 branches missed.">        for (Etudiant etudiant : etudiants) {</span>
+<span class="nc bnc" id="L596" title="All 2 branches missed.">            if (etudiant.getId() == idEtudiant) {</span>
+<span class="nc" id="L597">                genererPDF(etudiant);</span>
+<span class="nc" id="L598">                break;</span>
+            }
+<span class="nc" id="L600">        }</span>
+<span class="nc" id="L601">    } catch (RemoteException ex) {</span>
+<span class="nc" id="L602">        Logger.getLogger(GestionEtdIHM.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L603">        JOptionPane.showMessageDialog(this, </span>
+            &quot;Erreur de connexion au serveur&quot;, 
+            &quot;Erreur&quot;, JOptionPane.ERROR_MESSAGE);
+<span class="nc" id="L606">    }    }//GEN-LAST:event_btnImprimerActionPerformed</span>
+
+    private void txtSearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSearchKeyReleased
+        try {
+<span class="nc" id="L610">            ArrayList&lt;Etudiant&gt; etudiants = client.searchETD(txtSearch.getText().trim());</span>
+<span class="nc" id="L611">            DefaultTableModel model = (DefaultTableModel) table.getModel();</span>
+<span class="nc" id="L612">            model.setRowCount(0); // Effacer les anciennes données</span>
+
+<span class="nc bnc" id="L614" title="All 2 branches missed.">            for (Etudiant etudiant : etudiants) {</span>
+<span class="nc" id="L615">                Object[] row = {</span>
+<span class="nc" id="L616">                    etudiant.getId(),</span>
+<span class="nc" id="L617">                    etudiant.getNom(),</span>
+<span class="nc" id="L618">                    etudiant.getPrenom(),</span>
+<span class="nc" id="L619">                    etudiant.getEmail(),</span>
+<span class="nc" id="L620">                    etudiant.getNomFiliere(), // Assurez-vous d'avoir ces getters dans votre classe Etudiant</span>
+<span class="nc" id="L621">                    etudiant.getNomClasse()  // Assurez-vous d'avoir ces getters dans votre classe Etudiant</span>
+                };
+<span class="nc" id="L623">                model.addRow(row);</span>
+<span class="nc" id="L624">            }</span>
+<span class="nc" id="L625">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L626">            Logger.getLogger(GestionEtdIHM.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L627">            javax.swing.JOptionPane.showMessageDialog(this, &quot;Erreur de récupération des étudiants.&quot;, &quot;Erreur&quot;, javax.swing.JOptionPane.ERROR_MESSAGE);</span>
+<span class="nc" id="L628">        }</span>
+<span class="nc" id="L629">    }//GEN-LAST:event_txtSearchKeyReleased</span>
+
+    private void txtSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSearchActionPerformed
+ try {
+<span class="nc" id="L633">            ArrayList&lt;Etudiant&gt; etudiants = client.searchETD(txtSearch.getText().trim());</span>
+<span class="nc" id="L634">            DefaultTableModel model = (DefaultTableModel) table.getModel();</span>
+<span class="nc" id="L635">            model.setRowCount(0); // Effacer les anciennes données</span>
+
+<span class="nc bnc" id="L637" title="All 2 branches missed.">            for (Etudiant etudiant : etudiants) {</span>
+<span class="nc" id="L638">                Object[] row = {</span>
+<span class="nc" id="L639">                    etudiant.getId(),</span>
+<span class="nc" id="L640">                    etudiant.getNom(),</span>
+<span class="nc" id="L641">                    etudiant.getPrenom(),</span>
+<span class="nc" id="L642">                    etudiant.getEmail(),</span>
+<span class="nc" id="L643">                    etudiant.getNomFiliere(), // Assurez-vous d'avoir ces getters dans votre classe Etudiant</span>
+<span class="nc" id="L644">                    etudiant.getNomClasse()  // Assurez-vous d'avoir ces getters dans votre classe Etudiant</span>
+                };
+<span class="nc" id="L646">                model.addRow(row);</span>
+<span class="nc" id="L647">            }</span>
+<span class="nc" id="L648">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L649">            Logger.getLogger(GestionEtdIHM.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L650">            javax.swing.JOptionPane.showMessageDialog(this, &quot;Erreur de récupération des étudiants.&quot;, &quot;Erreur&quot;, javax.swing.JOptionPane.ERROR_MESSAGE);</span>
+<span class="nc" id="L651">        }    }//GEN-LAST:event_txtSearchActionPerformed</span>
+    
+    
+    private void genererPDF(Etudiant etudiant) {
+<span class="nc" id="L655">    Document document = new Document();</span>
+    try {
+        // Créer le dossier de sauvegarde s'il n'existe pas
+<span class="nc" id="L658">        File dossier = new File(&quot;etudiants_pdf&quot;);</span>
+<span class="nc bnc" id="L659" title="All 2 branches missed.">        if (!dossier.exists()) {</span>
+<span class="nc" id="L660">            dossier.mkdir();</span>
+        }
+        
+        // Créer le fichier PDF
+<span class="nc" id="L664">        String filename = &quot;etudiants_pdf/Etudiant_&quot; + etudiant.getNom()+&quot;_&quot;+etudiant.getPrenom() +&quot;.pdf&quot;;</span>
+<span class="nc" id="L665">        PdfWriter.getInstance(document, new FileOutputStream(filename));</span>
+<span class="nc" id="L666">        document.open();</span>
+        
+        // Ajouter le titre
+<span class="nc" id="L669">        Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, BaseColor.BLUE);</span>
+<span class="nc" id="L670">        Paragraph title = new Paragraph(&quot;Fiche Étudiant&quot;, titleFont);</span>
+<span class="nc" id="L671">        title.setAlignment(Element.ALIGN_CENTER);</span>
+<span class="nc" id="L672">        title.setSpacingAfter(20f);</span>
+<span class="nc" id="L673">        document.add(title);</span>
+        
+        
+        // Créer un tableau pour les informations
+<span class="nc" id="L677">        PdfPTable table = new PdfPTable(2);</span>
+<span class="nc" id="L678">        table.setWidthPercentage(80);</span>
+<span class="nc" id="L679">        table.setSpacingBefore(20f);</span>
+<span class="nc" id="L680">        table.setSpacingAfter(30f);</span>
+        
+        // Style des cellules
+<span class="nc" id="L683">        Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);</span>
+<span class="nc" id="L684">        Font cellFont = FontFactory.getFont(FontFactory.HELVETICA, 12);</span>
+        
+        // Ajouter les informations
+<span class="nc" id="L687">        addRow(table, &quot;ID Étudiant&quot;, String.valueOf(etudiant.getId()), headerFont, cellFont);</span>
+<span class="nc" id="L688">        addRow(table, &quot;Nom&quot;, etudiant.getNom(), headerFont, cellFont);</span>
+<span class="nc" id="L689">        addRow(table, &quot;Prénom&quot;, etudiant.getPrenom(), headerFont, cellFont);</span>
+<span class="nc" id="L690">        addRow(table, &quot;Email&quot;, etudiant.getEmail(), headerFont, cellFont);</span>
+<span class="nc" id="L691">        addRow(table, &quot;Date de Naissance&quot;, etudiant.getDateNaissance().toString(), headerFont, cellFont);</span>
+<span class="nc" id="L692">        addRow(table, &quot;Classe&quot;, etudiant.getNomClasse(), headerFont, cellFont);</span>
+<span class="nc" id="L693">        addRow(table, &quot;Filière&quot;, etudiant.getNomFiliere(), headerFont, cellFont);</span>
+        
+<span class="nc" id="L695">        document.add(table);</span>
+        
+        // Ajouter un pied de page
+<span class="nc" id="L698">        Font footerFont = FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 10);</span>
+<span class="nc" id="L699">        Paragraph footer = new Paragraph(&quot;Généré le &quot; + new java.util.Date(), footerFont);</span>
+<span class="nc" id="L700">        footer.setAlignment(Element.ALIGN_RIGHT);</span>
+<span class="nc" id="L701">        document.add(footer);</span>
+        
+<span class="nc" id="L703">        JOptionPane.showMessageDialog(this, </span>
+<span class="nc" id="L704">            &quot;PDF généré avec succès!\nFichier: &quot; + new File(filename).getAbsolutePath(),</span>
+            &quot;Succès&quot;, JOptionPane.INFORMATION_MESSAGE);
+<span class="nc" id="L706">    } catch (DocumentException | IOException e) {</span>
+<span class="nc" id="L707">        JOptionPane.showMessageDialog(this, </span>
+<span class="nc" id="L708">            &quot;Erreur lors de la génération du PDF: &quot; + e.getMessage(),</span>
+            &quot;Erreur&quot;, JOptionPane.ERROR_MESSAGE);
+    } finally {
+<span class="nc bnc" id="L711" title="All 2 branches missed.">        if (document.isOpen()) {</span>
+<span class="nc" id="L712">            document.close();</span>
+        }
+    }
+<span class="nc" id="L715">}</span>
+
+private void addRow(PdfPTable table, String header, String value, Font headerFont, Font cellFont) {
+<span class="nc" id="L718">    PdfPCell cell1 = new PdfPCell(new Phrase(header, headerFont));</span>
+<span class="nc" id="L719">    PdfPCell cell2 = new PdfPCell(new Phrase(value, cellFont));</span>
+<span class="nc" id="L720">    table.addCell(cell1);</span>
+<span class="nc" id="L721">    table.addCell(cell2);</span>
+<span class="nc" id="L722">}</span>
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */                                                                                                                                                                         
+        //&lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot; Look and feel setting code (optional) &quot;&gt;
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+<span class="nc bnc" id="L733" title="All 2 branches missed.">            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {</span>
+<span class="nc bnc" id="L734" title="All 2 branches missed.">                if (&quot;Nimbus&quot;.equals(info.getName())) {</span>
+<span class="nc" id="L735">                    javax.swing.UIManager.setLookAndFeel(info.getClassName());</span>
+<span class="nc" id="L736">                    break;</span>
+                }
+            }
+<span class="nc" id="L739">        } catch (ClassNotFoundException ex) {</span>
+<span class="nc" id="L740">            java.util.logging.Logger.getLogger(GestionEtdIHM.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);</span>
+<span class="nc" id="L741">        } catch (InstantiationException ex) {</span>
+<span class="nc" id="L742">            java.util.logging.Logger.getLogger(GestionEtdIHM.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);</span>
+<span class="nc" id="L743">        } catch (IllegalAccessException ex) {</span>
+<span class="nc" id="L744">            java.util.logging.Logger.getLogger(GestionEtdIHM.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);</span>
+<span class="nc" id="L745">        } catch (javax.swing.UnsupportedLookAndFeelException ex) {</span>
+<span class="nc" id="L746">            java.util.logging.Logger.getLogger(GestionEtdIHM.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);</span>
+<span class="nc" id="L747">        }</span>
+        //&lt;/editor-fold&gt;
+        //&lt;/editor-fold&gt;
+
+        /* Create and display the form */
+<span class="nc" id="L752">        java.awt.EventQueue.invokeLater(new Runnable() {</span>
+            public void run() {
+                try {
+<span class="nc" id="L755">                    new GestionEtdIHM().setVisible(true);</span>
+<span class="nc" id="L756">                } catch (RemoteException ex) {</span>
+<span class="nc" id="L757">                    Logger.getLogger(GestionEtdIHM.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L758">                }</span>
+<span class="nc" id="L759">            }</span>
+        });
+<span class="nc" id="L761">    }</span>
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAdd;
+    private javax.swing.JButton btnAfficherParClasse;
+    private javax.swing.JButton btnImprimer;
+    private javax.swing.JButton btnModifer;
+    private javax.swing.JButton btndellEtudiant;
+    private javax.swing.JComboBox&lt;String&gt; cmbClass;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable table;
+    private com.toedter.calendar.JDateChooser txtDateN;
+    private javax.swing.JTextField txtEmail;
+    private javax.swing.JTextField txtNom;
+    private javax.swing.JTextField txtPrenom;
+    private javax.swing.JTextField txtSearch;
+    // End of variables declaration//GEN-END:variables
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
